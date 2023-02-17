@@ -8,8 +8,8 @@ using mission6.Models;
 namespace mission6.Migrations
 {
     [DbContext(typeof(MovieEntryContext))]
-    [Migration("20230208221231_init")]
-    partial class init
+    [Migration("20230215214436_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -17,16 +17,53 @@ namespace mission6.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.22");
 
+            modelBuilder.Entity("mission6.Models.Category", b =>
+                {
+                    b.Property<int>("CategoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CategoryName")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("CategoryId");
+
+                    b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            CategoryId = 1,
+                            CategoryName = "Fantasy"
+                        },
+                        new
+                        {
+                            CategoryId = 2,
+                            CategoryName = "Romance"
+                        },
+                        new
+                        {
+                            CategoryId = 3,
+                            CategoryName = "Action"
+                        },
+                        new
+                        {
+                            CategoryId = 4,
+                            CategoryName = "Documentary"
+                        });
+                });
+
             modelBuilder.Entity("mission6.Models.MovieResponse", b =>
                 {
                     b.Property<int>("MovieId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Category")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Director")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("Edited")
@@ -36,12 +73,15 @@ namespace mission6.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasMaxLength(25);
 
                     b.Property<string>("Rating")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Year")
@@ -49,13 +89,15 @@ namespace mission6.Migrations
 
                     b.HasKey("MovieId");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("responses");
 
                     b.HasData(
                         new
                         {
                             MovieId = 1,
-                            Category = "Fantasy",
+                            CategoryId = 1,
                             Director = "JK Rowling",
                             Edited = false,
                             LentTo = "No one",
@@ -67,7 +109,7 @@ namespace mission6.Migrations
                         new
                         {
                             MovieId = 2,
-                            Category = "Fantasy",
+                            CategoryId = 1,
                             Director = "JK Rowling",
                             Edited = false,
                             LentTo = "No one",
@@ -79,7 +121,7 @@ namespace mission6.Migrations
                         new
                         {
                             MovieId = 3,
-                            Category = "Fantasy",
+                            CategoryId = 1,
                             Director = "JK Rowling",
                             Edited = false,
                             LentTo = "No one",
@@ -88,6 +130,15 @@ namespace mission6.Migrations
                             Title = "Harry Potter: The Prisoner of Azkaban",
                             Year = 2012
                         });
+                });
+
+            modelBuilder.Entity("mission6.Models.MovieResponse", b =>
+                {
+                    b.HasOne("mission6.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

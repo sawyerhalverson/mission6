@@ -15,16 +15,27 @@ namespace mission6.Models
         }
 
         public DbSet<MovieResponse> responses { get; set; }
+        public DbSet<Category> Categories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder mb)
         {
+
+            mb.Entity<Category>().HasData(
+                new Category { CategoryId=1,CategoryName="Fantasy"},
+                new Category { CategoryId = 2, CategoryName = "Romance" },
+                new Category { CategoryId = 3, CategoryName = "Action" },
+                new Category { CategoryId = 4, CategoryName = "Documentary" }
+
+                );
+
+
             mb.Entity<MovieResponse>().HasData(
                 
                 //seed the data
                 new MovieResponse
                 {
                     MovieId = 1,
-                    Category = "Fantasy",
+                    CategoryId = 1,
                     Title = "Harry Potter",
                     Year = 2007,
                     Director = "JK Rowling",
@@ -36,7 +47,7 @@ namespace mission6.Models
                 new MovieResponse
                 {
                     MovieId = 2,
-                    Category = "Fantasy",
+                    CategoryId = 1,
                     Title = "Harry Potter: The Chamber of Secrets",
                     Year = 2010,
                     Director = "JK Rowling",
@@ -48,7 +59,7 @@ namespace mission6.Models
                 new MovieResponse
                 {
                     MovieId = 3,
-                    Category = "Fantasy",
+                    CategoryId = 1,
                     Title = "Harry Potter: The Prisoner of Azkaban",
                     Year = 2012,
                     Director = "JK Rowling",

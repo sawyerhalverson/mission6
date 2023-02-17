@@ -12,9 +12,7 @@ namespace mission6.Models
         [Key]
         public int MovieId { get; set; }
 
-        // category **required
-        [Required]
-        public string Category { get; set; }
+
 
 
         //title **required
@@ -53,6 +51,14 @@ namespace mission6.Models
 
 
         public string Notes { get; set; }
+
+
+
+
+        //build foreign key  relationship
+        [Required]
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
 
 
     }

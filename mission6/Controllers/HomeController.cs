@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using mission6.Models;
 using System;
@@ -28,19 +29,27 @@ namespace mission6.Controllers
         }
 
         [HttpGet]
-        public IActionResult EnterNewMovie()
+        public IActionResult EnterMovie()
         {
-            return View("EnterMovie");
+            ViewBag.Categories = _myContext.Categories.ToList();
+            return View();
         }
 
         //differentiate post and get actions
 
         [HttpPost]
-        public IActionResult EnterNewMovie(MovieResponse response) //create a response object from this class
-        {
+        public IActionResult EnterMovie(MovieResponse response) //create a response object from this class
+        {   //validation
+            if (ModelState.IsValid) { 
             _myContext.Add(response);
             _myContext.SaveChanges();
             return View("Confirmation", response);
+        }
+            else
+            {
+                ViewBag.Categories = _myContext.Categories.ToList();
+                return View();
+            }
         }
 
         //create new action to navigate to the Podcasts page
@@ -49,16 +58,58 @@ namespace mission6.Controllers
         {
             return View("Podcasts");
         }
+        
 
-        public IActionResult Privacy()
+
+        [HttpGet]
+        public IActionResult MovieList ()
         {
-            return View();
+            var movies = _myContext.responses
+                .Include(x => x.Category)
+                .OrderBy(x => x.Title).ToList();
+            return View(movies);
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+
+        //add in edit and delete functions
+        [HttpGet]
+        public IActionResult Edit(int movieid)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            ViewBag.Categories = _myContext.Categories.ToList();
+
+            var movieEntry = _myContext.responses.Single(x => x.MovieId == movieid);
+
+            return View("EnterMovie", movieEntry);
+        }
+
+        [HttpPost]
+
+        public IActionResult Edit (MovieResponse newResponse)
+        {
+
+            _myContext.Update(newResponse);
+            _myContext.SaveChanges();
+            return RedirectToAction("MovieList");
+        }
+        
+        //create a delete action
+
+        [HttpGet]
+        public IActionResult Delete(int movieid)
+        {
+
+            var entry = _myContext.responses.Single(x => x.MovieId == movieid);
+            return View(entry);
+        }
+
+        [HttpPost]
+        public IActionResult Delete(MovieResponse response)
+        {
+
+            _myContext.responses.Remove(response);
+            _myContext.SaveChanges();
+
+            return RedirectToAction("MovieList");
         }
     }
 }
